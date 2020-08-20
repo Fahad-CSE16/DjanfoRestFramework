@@ -10,13 +10,17 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'posts']
 
 class CategorySerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Category
         fields = ['title']
 
 
 class PostSerializer(serializers.ModelSerializer):
-    owner= serializers.ReadOnlyField(source= 'owner.username')
+    owner = serializers.ReadOnlyField(source='owner.username')
+    # category = serializers.HyperlinkedRelatedField(many=False, read_only=True, view_name="single-category")
+    # category= serializers.StringRelatedField(many=False)
+    category= serializers.SlugRelatedField(many=False, read_only=True, slug_field='title')
     class Meta:
         model = Post
         fields = ['owner','title', 'body', 'category']
