@@ -11,17 +11,29 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 
+class PostSerializer1(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    # category = serializers.HyperlinkedRelatedField(many=False, read_only=True, view_name="single-category")
+    # category= serializers.StringRelatedField(many=False)
+    # category= serializers.SlugRelatedField(many=False, read_only=True, slug_field='title')
+    class Meta:
+        model = Post
+        fields = ['owner','title', 'body']
+
+class CategorySerializer(serializers.ModelSerializer):
+    posts= PostSerializer1(many= True, read_only=True, source='post_set')
+    class Meta:
+        model = Category
+        fields = ['title',  'created_at', 'posts']
+
+
 class PostSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     # category = serializers.HyperlinkedRelatedField(many=False, read_only=True, view_name="single-category")
     # category= serializers.StringRelatedField(many=False)
-    category= serializers.SlugRelatedField(many=False, read_only=True, slug_field='title')
+    category = serializers.SlugRelatedField(
+        many=False, read_only=True, slug_field='title')
+
     class Meta:
         model = Post
-        fields = ['owner','title', 'body', 'category']
-
-class CategorySerializer(serializers.ModelSerializer):
-    posts= PostSerializer(many= True, read_only=True, source='post_set')
-    class Meta:
-        model = Category
-        fields = ['title','posts','created_at']
+        fields = ['owner', 'title', 'body', 'category']
