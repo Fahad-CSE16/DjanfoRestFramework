@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework import permissions
 from rest_framework import generics
 from .models import Post, Category
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsOwnerOrIsAdminOrReadOnly
 from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
 
@@ -38,18 +38,24 @@ class PostList(generics.ListCreateAPIView):
 
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrIsAdminOrReadOnly]
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
 
-class CategoryList(generics.ListCreateAPIView):
+class CategoryList(generics.ListAPIView):
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
-class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
+class CategoryCreate(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAdminUser]
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class CategoryDetail(generics.RetrieveAPIView):
     # permission_classes = [
     #     permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     queryset = Category.objects.all() 
@@ -60,7 +66,8 @@ class ApiRoot(APIView):
         return Response({
             'users': reverse('users', request=request, format=format),
             'categories': reverse('categories', request=request, format=format),
-            'posts': reverse('posts', request=request, format=format)
+            'posts': reverse('posts', request=request, format=format),
+            'Create-category': reverse('category-create', request=request, format=format),
         })
         
 

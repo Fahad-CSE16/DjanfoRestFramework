@@ -18,6 +18,7 @@ class Category(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        verbose_name_plural = "Categories"
 class Post(models.Model):
     title = models.CharField(max_length=200)
     body = models.TextField()
@@ -38,3 +39,4 @@ class Post(models.Model):
         
     class Meta:
         ordering = ['created_at']
+        # verbose_name_plural= "Categories"
