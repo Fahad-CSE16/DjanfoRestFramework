@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAdminUser
-from rest_framework import permissions
+from rest_framework import permissions, viewsets
 from rest_framework import generics
 from .models import Post, Category
 from .permissions import IsOwnerOrReadOnly, IsOwnerOrIsAdminOrReadOnly
@@ -18,35 +18,45 @@ from . serializers import PostSerializer, CategorySerializer,UserSerializer
 
 
 # Create your views here.
-class UserList(generics.ListAPIView):
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes= [permissions.IsAdminUser]
+# class UserList(generics.ListAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+#     permission_classes= [permissions.IsAdminUser]
 
 
-class UserDetail(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+# class UserDetail(generics.RetrieveAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
 
 
-class PostList(generics.ListCreateAPIView):
+class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset= Post.objects.all()
     serializer_class = PostSerializer
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+# class PostList(generics.ListCreateAPIView):
+#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+#     queryset= Post.objects.all()
+#     serializer_class = PostSerializer
+#     def perform_create(self, serializer):
+#         serializer.save(owner=self.request.user)
 
-class PostDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrIsAdminOrReadOnly]
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+
+# class PostDetail(generics.RetrieveUpdateDestroyAPIView):
+#     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrIsAdminOrReadOnly]
+#     queryset = Post.objects.all()
+#     serializer_class = PostSerializer
 
 
-class CategoryList(generics.ListAPIView):
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+# class CategoryList(generics.ListAPIView):
+#     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+#     queryset = Category.objects.all()
+#     serializer_class = CategorySerializer
 
 
 class CategoryCreate(generics.ListCreateAPIView):
@@ -54,12 +64,16 @@ class CategoryCreate(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-
-class CategoryDetail(generics.RetrieveAPIView):
-    # permission_classes = [
-    #     permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    queryset = Category.objects.all() 
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+# class CategoryDetail(generics.RetrieveAPIView):
+#     # permission_classes = [
+#     #     permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+#     queryset = Category.objects.all() 
+#     serializer_class = CategorySerializer
 
 class ApiRoot(APIView):
     def get(self, request, format=None):
