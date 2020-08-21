@@ -9,11 +9,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'posts']
 
-class CategorySerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = Category
-        fields = ['title']
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -24,3 +19,9 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['owner','title', 'body', 'category']
+
+class CategorySerializer(serializers.ModelSerializer):
+    posts= PostSerializer(many= True, read_only=True, source='post_set')
+    class Meta:
+        model = Category
+        fields = ['title','posts','created_at']
